@@ -121,7 +121,6 @@ for k = 1 : length(alltrials)
             numberCorrectN = numberCorrectN + 1;
         end
         hisN = [hisN, alltrials{1,k}.Correctness];
-       
         
     end
     
@@ -222,9 +221,9 @@ deltax = reordercats(deltax,{'Valid','Invalid'});
 x = categorical({'Valid','Neutral','Invalid'});
 x = reordercats(x,{'Valid','Neutral','Invalid'});
 
-std = [sigmaV,sigmaN,sigmaI];
-std2 = [sigV,sigN, sigI];
-std3 = [errV,errN,errI];
+err_std = [sigmaV,sigmaN,sigmaI];
+err_std2 = [sigV,sigN, sigI];
+err_std3 = [errV,errN,errI];
 
 mean = [numberCorrectV, numberCorrectN, numberCorrectI];
 acc = [accuracyV,accuracyN,accuracyI];
@@ -251,8 +250,8 @@ hold on;
 
 h = figure(2);
 acc = acc*100;
-std2 = std2 *100;
-std3 = std3*100;
+err_std2 = err_std2 *100;
+err_std3 = err_std3*100;
 
 %bar(x,acc, 0.4);
 bar(1, acc(1), 'facecolor', [222,235,247]/255);
@@ -271,7 +270,7 @@ xlabel('Conditions','FontSize',28);
 ylabel('Task Acccuracy','FontSize',28);
 ylim([50,100]);
 hold on
-errorbar(1:3,acc,std2,'.', 'Color', 'black');
+errorbar(1:3,acc,err_std2,'.', 'Color', 'black');
 hold on
 
 set(h,'Position',[0, 0, 800, 640]);

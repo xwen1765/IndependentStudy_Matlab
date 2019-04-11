@@ -24,6 +24,7 @@ ResponseTime = 0;
 
 exclude = [];
 notrack = 0;
+
 for k = 1 : length(pptrials)
     if(~isempty(pptrials{1,k}.notracks.start)||pptrials{1,k}.AnswerDirection ~= -1)
         notrack = notrack+1;
@@ -89,7 +90,6 @@ for k = 1 : length(pptrials)
 end
 
 exclude = unique(exclude);
-disp(exclude)
 alltrials = pptrials;
 for k = 1 : length(exclude)
     alltrials{exclude(k)} = [];
@@ -101,17 +101,23 @@ rtV = 0;
 rtN = 0;
 rtI = 0;
 
+RTarrV=[];
+RTarrN=[];
+RTarrI=[];
+
 for k = 1 : length(alltrials)
     total = total+1;
     if(alltrials{1,k}.Correctness == 1 )
         numberCorrect = numberCorrect + 1;
     end
     trials = [trials, k]; %#ok<*AGROW>
-    his = [his, alltrials{1,k}.Correctness];
     
     if(alltrials{1,k}.AnswerDirection ~= -1 && alltrials{1,k}.TrialType == 1)
         totalV = totalV+1;
-        rtV = rtV + alltrials{1,k}.ResponseTime;
+        % 1332: precue to response cue
+        tempRT = alltrials{1,k}.ResponseTime - 1332;
+        rtV = rtV + tempRT;
+        RTarrV = [RTarrV, tempRT];
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectV = numberCorrectV + 1;
         end
@@ -123,7 +129,9 @@ for k = 1 : length(alltrials)
     
     if(alltrials{1,k}.AnswerDirection ~=-1 && alltrials{1,k}.TrialType == 2)
         totalN = totalN+1;
-        rtN = rtN + alltrials{1,k}.ResponseTime;
+        tempRT = alltrials{1,k}.ResponseTime - 1332;
+        rtN = rtN + tempRT;
+        RTarrN = [RTarrN, tempRT];
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectN = numberCorrectN + 1;
         end
@@ -134,7 +142,9 @@ for k = 1 : length(alltrials)
     
     if(alltrials{1,k}.AnswerDirection ~=-1 && alltrials{1,k}.TrialType == 0)
         totalI = totalI+1;
-        rtI = rtI + alltrials{1,k}.ResponseTime;
+        tempRT = alltrials{1,k}.ResponseTime - 1332;
+        rtI = rtI + tempRT;
+        RTarrI = [RTarrI, tempRT];
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectI = numberCorrectI + 1;
         end
@@ -178,14 +188,38 @@ deltax = reordercats(deltax,{'Valid','Invalid'});
 x = categorical({'Valid','Neutral','Invalid'});
 x = reordercats(x,{'Valid','Neutral','Invalid'});
 
-std = [sigmaV,sigmaN,sigmaI];
-std2 = [sigV,sigN, sigI];
-std3 = [errV,errN,errI];
+%std = [sigmaV,sigmaN,sigmaI];
+%std2 = [sigV,sigN, sigI];
+%std3 = [errV,errN,errI];
 
 mean = [numberCorrectV, numberCorrectN, numberCorrectI];
 acc = [accuracyV,accuracyN,accuracyI];
 
-rt = [rtV/totalV , rtN/totalN , rtI/totalI ];
+meanrtV = rtV/totalV;
+meanrtN = rtN/totalN;
+meanrtI = rtI/totalI;
+rt = [meanrtV , meanrtN , meanrtI];
+
+%standard errors(use this for error bar)
+rtV_se=std(RTarrV)/(sqrt(totalV));
+rtN_se=std(RTarrN)/(sqrt(totalN));
+rtI_se=std(RTarrI)/(sqrt(totalI));
+Err = [rtV_se, rtN_se, rtI_se];
+
+% degree of freedom for t-statistics
+dofVI = ((rtV_se^2+rtI_se^2)^2)/(rtV_se^2/(totalV-1)+rtI_se^2/(totalI-1));
+dofVN = ((rtV_se^2+rtN_se^2)^2)/(rtV_se^2/(totalV-1)+rtN_se^2/(totalN-1));
+dofNI = ((rtN_se^2+rtI_se^2)^2)/(rtN_se^2/(totalN-1)+rtI_se^2/(totalI-1));
+
+% t* value
+tVI = abs(meanrtV-meanrtI)/sqrt(rtV_se^2+rtI_se^2);
+tVN = abs(meanrtV-meanrtN)/sqrt(rtV_se^2+rtN_se^2);
+tNI = abs(meanrtN-meanrtI)/sqrt(rtN_se^2+rtI_se^2);
+
+% p-value
+pVI = 1-tcdf(tVI,dofVI);
+pVN = 1-tcdf(tVN,dofVN);
+pNI = 1-tcdf(tNI,dofNI);
 
 h = figure(2);
 %bar(x,acc, 0.4);
@@ -195,12 +229,12 @@ bar(2, rt(2),'facecolor', [158,202,225]/255);
 hold on;
 bar(3, rt(3),'facecolor', [49,130,189]/255);
 
-xticks([1 2 3])
+xticks([1 2 3]);
 xticklabels({'Valid','Neutral','Invalid'});
 FontSize = 10;
 set(gca,'FontSize',26);
-% title('Accuracy Comparison','FontSize',24);
-ylim([1680, 2300]);
+
+errorbar(1:3,rt,Err,'.', 'Color', 'black');
 xlabel('Conditions','FontSize',28);
 ylabel('Response Time','FontSize',28);
 hold on

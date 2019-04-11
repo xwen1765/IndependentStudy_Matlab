@@ -331,18 +331,19 @@ sigINoMS = sqrt(accuracyINoMS * (1-accuracyINoMS))/sqrt(totalNoMSI);
 
 hold off;
 acc = [accuracyVMS accuracyVNoMS;accuracyNMS accuracyNNoMS; accuracyIMS accuracyINoMS];
-std = [sigVMS sigVNoMS; sigNMS sigNNoMS; sigIMS sigINoMS];
+errStd = [sigVMS sigVNoMS; sigNMS sigNNoMS; sigIMS sigINoMS];
 acc = acc*100;
-std = std *100;
+errStd = errStd *100;
 stdlabel = [sigVMS sigVNoMS; sigNMS sigNNoMS; sigIMS sigINoMS];
 
-hB = barwitherr(std,acc);
+hB = barwitherr(errStd,acc);
 
 %labels = [totalMSVinI (totalNoMSV +totalMSVNoinI); totalMSNinI (totalNoMSN + totalMSNNoinI); totalMSIinI (totalNoMSI + totalMSINoinI)];
 
 labels = [totalMSVinI (totalNoMSV ); totalMSNinI (totalNoMSN); totalMSIinI (totalNoMSI)];
 labels = string(labels);
-hT=[];              % placeholder for text object handles
+hT=[];              
+% placeholder for text object handles
 
 
 % for i=1:length(hB)  % iterate over number of bar objects

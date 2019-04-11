@@ -18,7 +18,7 @@ rightCorrect = 0;
 leftCorrect = 0;
 for k = 1:length(alltrials)
     
-    if(alltrials{1,k}.TrialType == 1)
+    if(alltrials{1,k}.AnswerDirection ~= -1 &&alltrials{1,k}.TrialType == 1)
         if(alltrials{1,k}.CueDirection == -1)
             leftTotal = leftTotal+1;
             lvt = lvt+1;
@@ -40,7 +40,7 @@ for k = 1:length(alltrials)
     
     
     
-    if(alltrials{1,k}.TrialType == 0)
+    if(alltrials{1,k}.AnswerDirection ~= -1 &&alltrials{1,k}.TrialType == 0)
         if(alltrials{1,k}.CueDirection == 1)
             leftTotal = leftTotal+1;
             lit = lit+1;
@@ -61,7 +61,7 @@ for k = 1:length(alltrials)
     end
     
     
-    if(alltrials{1,k}.TrialType == 2)
+    if(alltrials{1,k}.AnswerDirection ~= -1 && alltrials{1,k}.TrialType == 2)
         if(alltrials{1,k}.CueDirection == -1)
             leftTotal = leftTotal+1;
             lnt = lnt+1;
