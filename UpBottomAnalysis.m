@@ -1,4 +1,3 @@
-
 leftTotal = 0;
 rightTotal = 0;
 direction = 0;
@@ -101,6 +100,7 @@ sigNR = 1* sqrt(accrn * (1-accrn))/sqrt(rnt);
 sigIR = 1* sqrt(accri * (1-accri))/sqrt(rit);
 
 err = [sigVL sigVR; sigNL sigNR; sigIL sigIR ];
+err = err *100;
 disp('Total accuracy');
 disp(leftCorrect/leftTotal);
 disp(rightCorrect/rightTotal);
@@ -109,6 +109,7 @@ xname = categorical({'Valid','Neutral','Invalid'});
 xname = reordercats(xname,{'Valid','Neutral','Invalid'});
 
 x = [lvc/lvt rvc/rvt;lnc/lnt rnc/rnt;lic/lit ric/rit];
+x = x *100;
 % g = bar(xname,x);
 % hold on;
 % errorbar(x,err,'.','Color','black');
@@ -130,14 +131,16 @@ h = bar(model_series,'BarWidth',1);
 % h(1).FaceColor = 'blue';
 % h(2).FaceColor = 'yellow';
 % Properties of the bar graph as required
-ax.YGrid = 'on';
+ax.YGrid = 'off';
 ax.GridLineStyle = '-';
 xticks(ax,[1 2 3]);
+ytickformat('percentage');
+
 % Naming each of the bar groups
 xticklabels(ax,{ 'Valid', 'Neutral', 'Invalid'});
 % X and Y labels
 
-ylim([0.5,1]);
+ylim([50,100]);
 % Creating a legend and placing it outside the bar plot
 hold on;
 % Finding the number of groups and the number of bars in each group
@@ -153,8 +156,12 @@ for i = 1:nbars
     errorbar(x, model_series(:,i), model_error(:,i), 'k', 'linestyle', 'none');
 end
 lg = legend('Upper-right','Lower-left'); 
-set(lg,'FontSize',16);
+set(lg,'FontSize',26);
 hold on;
+
+%set(h,'Position',[0, 0, 800, 640]);
+set(gca,'FontSize',26);
+
 
 % disp('Bottom left');
 % disp(lvc/lvt);

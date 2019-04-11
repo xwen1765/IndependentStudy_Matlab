@@ -97,6 +97,10 @@ end
 alltrials(cellfun('isempty', alltrials)) = [];
 % Exclude inaccurate trials
 
+rtV = 0;
+rtN = 0;
+rtI = 0;
+
 for k = 1 : length(alltrials)
     total = total+1;
     if(alltrials{1,k}.Correctness == 1 )
@@ -107,9 +111,11 @@ for k = 1 : length(alltrials)
     
     if(alltrials{1,k}.AnswerDirection ~= -1 && alltrials{1,k}.TrialType == 1)
         totalV = totalV+1;
+        rtV = rtV + alltrials{1,k}.ResponseTime;
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectV = numberCorrectV + 1;
         end
+        
         hisV = [hisV, alltrials{1,k}.Correctness];
         accuracyV = [accuracyV,numberCorrectV/totalV];
         trialsV = [trialsV, k]; %#ok<*AGROW>
@@ -117,6 +123,7 @@ for k = 1 : length(alltrials)
     
     if(alltrials{1,k}.AnswerDirection ~=-1 && alltrials{1,k}.TrialType == 2)
         totalN = totalN+1;
+        rtN = rtN + alltrials{1,k}.ResponseTime;
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectN = numberCorrectN + 1;
         end
@@ -127,6 +134,7 @@ for k = 1 : length(alltrials)
     
     if(alltrials{1,k}.AnswerDirection ~=-1 && alltrials{1,k}.TrialType == 0)
         totalI = totalI+1;
+        rtI = rtI + alltrials{1,k}.ResponseTime;
         if(alltrials{1,k}.Correctness == 1 )
             numberCorrectI = numberCorrectI + 1;
         end
@@ -155,34 +163,6 @@ end
 
 
 
-studentTdistV = sqrt(studentTdistV/(totalV-1));
-studentTdistI = sqrt(studentTdistI/(totalI-1));
-studentTdistN = sqrt(studentTdistN/(totalN-1));
-
-
-alphaup = 1-0.05/2;
-alphadown = 0.05/2;
-upV = tinv(alphaup,totalV-1);
-upN = tinv(alphaup,totalN-1);
-upI = tinv(alphaup,totalI-1);
-downV = tinv(alphadown, totalV - 1);
-downN = tinv(alphadown, totalN - 1);
-downI = tinv(alphadown, totalI - 1);
-
-errV = upV * studentTdistV/sqrt(totalV);
-errN = upN * studentTdistN/sqrt(totalN);
-errI = upI * studentTdistI/sqrt(totalI);
-%standard error calculation
-
-
-deltaV = accuracyV - accuracyN;
-deltaI = accuracyI - accuracyN;
-%accuracy differences
-
-sigmaV = sqrt(totalV * accuracyV * (1-accuracyV));
-sigmaN = sqrt(totalN * accuracyN * (1-accuracyN));
-sigmaI = sqrt(totalI * accuracyI * (1-accuracyI));
-
 
 sigV = sqrt(accuracyV * (1-accuracyV))/sqrt(totalV);
 sigN = sqrt(accuracyN * (1-accuracyN))/sqrt(totalN);
@@ -190,30 +170,6 @@ sigI = sqrt(accuracyI * (1-accuracyI))/sqrt(totalI);
 % Error bar calculation
 
 
-CorrectV = numberCorrectV;
-CorrectI = numberCorrectI;
-CorrectN = numberCorrectN;
-
-invalid_ac = accuracyI;
-valid_ac = accuracyV;
-neutral_ac = accuracyN;
-
-Vn = totalN;
-Vi = totalI;
-Vv = totalV;
-
-ph_vn = (CorrectV + CorrectN)/(Vv+Vn);
-ph_in = (CorrectI + CorrectN)/(Vi+Vn);
-ph_vi = (CorrectV + CorrectI)/(Vv+Vi);
-
-Z_vn = (valid_ac-neutral_ac)/sqrt(ph_vn*(1-ph_vn)*(1/Vv+1/Vn))
-Z_in = (invalid_ac-neutral_ac)/sqrt(ph_in*(1-ph_in)*(1/Vi+1/Vn))
-Z_vi = (valid_ac-invalid_ac)/sqrt(ph_vi*(1-ph_vi)*(1/Vv+1/Vi))
-
-pvalueVI = 1 - normcdf(abs(Z_vi))
-pvalueIN = 1 - normcdf(abs(Z_in))
-pvalueVN = 1 - normcdf(abs(Z_vn))
-%p-value calculation
 
 
 deltax = categorical({'Valid', 'Invalid'});
@@ -229,49 +185,24 @@ std3 = [errV,errN,errI];
 mean = [numberCorrectV, numberCorrectN, numberCorrectI];
 acc = [accuracyV,accuracyN,accuracyI];
 
-h = figure(1);
-d = [sqrt(ph_vn*(1-ph_vn)*(1/Vv+1/Vn)),sqrt(ph_in*(1-ph_in)*(1/Vi+1/Vn))];
-deltaV = deltaV *100;
-deltaI = deltaI *100;
-d = d * 100;
-bar(1, deltaV, 'facecolor', [222,235,247]/255);
-hold on;
-bar(2, deltaI,'facecolor', [49,130,189]/255);
-xticks([1 2])
-xticklabels({'Valid', 'Invalid'})
-set(gca,'FontSize',26);
-% f1 = bar(deltax,[deltaV,deltaI],0.4);
-errorbar(deltax,[deltaV,deltaI],d,'.','Color','black');
-set(h,'Position',[0, 0, 800, 640]);
-ytickformat('percentage');
-hold on;
-
-
-
+rt = [rtV/totalV , rtN/totalN , rtI/totalI ];
 
 h = figure(2);
-acc = acc*100;
-std2 = std2 *100;
-std3 = std3*100;
-
 %bar(x,acc, 0.4);
-bar(1, acc(1), 'facecolor', [222,235,247]/255);
+bar(1, rt(1), 'facecolor', [222,235,247]/255);
 hold on;
-bar(2, acc(2),'facecolor', [158,202,225]/255);
+bar(2, rt(2),'facecolor', [158,202,225]/255);
 hold on;
-bar(3, acc(3),'facecolor', [49,130,189]/255);
+bar(3, rt(3),'facecolor', [49,130,189]/255);
 
 xticks([1 2 3])
 xticklabels({'Valid','Neutral','Invalid'});
 FontSize = 10;
-ytickformat('percentage');
 set(gca,'FontSize',26);
 % title('Accuracy Comparison','FontSize',24);
+ylim([1680, 2300]);
 xlabel('Conditions','FontSize',28);
-ylabel('Task Acccuracy','FontSize',28);
-ylim([50,100]);
-hold on
-errorbar(1:3,acc,std2,'.', 'Color', 'black');
+ylabel('Response Time','FontSize',28);
 hold on
 
 set(h,'Position',[0, 0, 800, 640]);

@@ -44,7 +44,7 @@ for k = 1 : length(pptrials)
     end
     
     
-    if(~isempty(pptrials{1,k}.notracks.start))
+    if(~isempty(pptrials{1,k}.saccades.start))
         for l = 1 :length(pptrials{1,k}.saccades.start)
             
             if((pptrials{1,k}.saccades.start(l) < 505 && (pptrials{1,k}.saccades.start(l) + ...
@@ -69,7 +69,9 @@ for k = 1 : length(pptrials)
         end
         
     end
-    
+    if(~ismember(fieldnames(pptrials{1,k}),'ResponseTime'))
+         exclude = [exclude, k];
+    end
 end
 
 exclude = unique(exclude);
@@ -131,10 +133,24 @@ end
 disp(correctM/totalM);
 disp(correctNoM/totalNoM);
 
-subplot(1,2,1);
+
+%colormap(gray);
+[x,y] = pol2cart(theta, amp);
+
+figure();
+ndhist(x,y,'bins', 2.8,'axis',[-30,30,-30,30]);
+% i = imagecartesian2polar(ndhist(x,y),0,100,360,1);
+
+figure();
+ndhist(x,y,'3d');
+figure();
 polarplot(theta,amp, 'x');
-subplot(1,2,2);
-polarhistogram(theta, 20);
+
+
+% figure();
+% polarhistogram(theta, 20);
+
+
 % xlim([0,2*pi]);
 % xticks([0,pi/4, pi/2, 3*pi/4, pi, pi+pi/4, pi+pi/2, pi+3*pi/4, 2*pi]);
 % xticklabels({'0','45','90','135','180','225','270','315','360'});

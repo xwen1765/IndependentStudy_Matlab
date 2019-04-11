@@ -42,7 +42,35 @@ for k = 1 : length(pptrials)
         
     end
     
-   
+     if(~isempty(pptrials{1,k}.saccades.start))
+        for l = 1 :length(pptrials{1,k}.saccades.start)
+            
+            if((pptrials{1,k}.saccades.start(l) < 505 && (pptrials{1,k}.saccades.start(l) + ...
+                    pptrials{1,k}.saccades.duration(l)) > 505) ||  (pptrials{1,k}.saccades.start(l) > 505 ...
+                    && pptrials{1,k}.saccades.start(l) < 805 )||pptrials{1,k}.AnswerDirection ~= -1)
+                exclude = [exclude, k]; %#ok<*AGROW>
+            end
+            
+            
+            if(( (pptrials{1,k}.saccades.start(l) < 1105 && pptrials{1,k}.saccades.start(l) > 805) && (pptrials{1,k}.saccades.start(l) + ...
+                    pptrials{1,k}.saccades.duration(l)) > 1105) ||  (pptrials{1,k}.saccades.start(l) > 1105 ...
+                    && pptrials{1,k}.saccades.start(l) < 1141 )||pptrials{1,k}.AnswerDirection ~= -1)
+                exclude = [exclude, k];
+            end
+            
+            if(( (pptrials{1,k}.saccades.start(l) < 1285 && pptrials{1,k}.saccades.start(l) > 1141) && (pptrials{1,k}.saccades.start(l) + ...
+                    pptrials{1,k}.saccades.duration(l)) > 1285) ||  (pptrials{1,k}.saccades.start(l) > 1285 ...
+                    && pptrials{1,k}.saccades.start(l) < 1680 )|| pptrials{1,k}.AnswerDirection ~= -1)
+                exclude = [exclude, k];
+            end
+            
+        end
+        
+    end
+    
+   if(~ismember(fieldnames(pptrials{1,k}),'ResponseTime'))
+         exclude = [exclude, k];
+    end
 end
 
 
@@ -85,7 +113,7 @@ disp(correctM/totalM);
 disp(correctNoM/totalNoM);
 
 
-hist(time);
+h = histogram(time,'NumBins', 15);
 [heights,centers] = hist(time);
 hold on
 n = length(centers);
@@ -98,7 +126,7 @@ Fvals = cumsum([0,heights.*dt]);
 F = spline(t, [0, Fvals, 0]);
 DF = fnder(F);  % computes its first derivative
 hold on
-fnplt(DF, 'r', 2);
+fnplt(DF, 'k', 2);
 ylims = ylim; 
 ylim([0,ylims(2)]);
 
@@ -108,10 +136,11 @@ for i = 1 : length(lb)
     plot([lb(i),lb(i)],[0,350],'w--', 'LineWidth', 2);
     hold on;
 end
+set(gca,'FontSize',26);
 
-title("#mS in time","Fontsize", 22);
-xticks([505 805 1105 1141 (1285+1680)/2]);
-xticklabels({'Cues Appear','Cues End','Stimulus','','Response Cues'});
+%title("Number of MS in time","Fontsize", 22);
+% xticks([505 805 1105 1141 (1285+1680)/2]);
+% xticklabels({'Cues Appear','Cues End','Stimulus','','Response Cues'});
 
 
 

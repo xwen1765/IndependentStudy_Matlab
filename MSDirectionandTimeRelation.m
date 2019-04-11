@@ -69,6 +69,9 @@ for k = 1 : length(pptrials)
         end
         
     end
+    if(~ismember(fieldnames(pptrials{1,k}),'ResponseTime'))
+         exclude = [exclude, k];
+    end
     
 end
 
@@ -80,10 +83,11 @@ end
 alltrials(cellfun('isempty', alltrials)) = [];
 % Exclude inaccurate trials
 
+MSbeforePrecue = [];
 MSinPrecue = [];
 MSBetweenPrecueAndStimuli = [];
 MSinStimuli = [];
-
+AllMS = [];
 for k = 1 : length(alltrials)
     if(~isempty(alltrials{1,k}.microsaccades.start))
         if(alltrials{1,k}.Correctness == 1)
@@ -98,13 +102,18 @@ for k = 1 : length(alltrials)
             
             time = [time, alltrials{1,k}.microsaccades.start(h)];
             
-            if((alltrials{1,k}.microsaccades.start(h) > 505 ...
-                    && alltrials{1,k}.microsaccades.start(h) < 1141 ) && collectb == 0)
+            if((alltrials{1,k}.microsaccades.start(h) < 1141 ) && collectb == 0)
                 trialsBeforeStmOff = [trialsBeforeStmOff, k];
                 collectb = 1;
                 
                 for j = 1 : length(alltrials{1,k}.microsaccades.angle)
                     countM = countM + 1;
+                    
+                    if( alltrials{1,k}.microsaccades.start(h) < 505)
+                   
+                    MSbeforePrecue = [MSbeforePrecue, alltrials{1,k}.microsaccades.angle(j)];
+                    end
+                    
                     if(alltrials{1,k}.microsaccades.start(h) > 505 && alltrials{1,k}.microsaccades.start(h) < 805)
                    
                     MSinPrecue = [MSinPrecue, alltrials{1,k}.microsaccades.angle(j)];
@@ -118,6 +127,7 @@ for k = 1 : length(alltrials)
                     MSinStimuli = [MSinStimuli, alltrials{1,k}.microsaccades.angle(j)];
                     end
                     
+                    AllMS = [AllMS, alltrials{1,k}.microsaccades.angle(j)];
                 end
             end
             
@@ -146,17 +156,69 @@ end
 disp(correctM/totalM);
 disp(correctNoM/totalNoM);
 
-r = polarhistogram(MSinPrecue,20,'FaceColor', 'red');
-r.DisplayStyle = 'stairs';
-hold on;
-g = polarhistogram(MSBetweenPrecueAndStimuli,20,'FaceColor', 'g');
-g.DisplayStyle = 'stairs';
-hold on;
-b = polarhistogram(MSinStimuli,20,'FaceColor', 'b');
-b.DisplayStyle = 'stairs';
+All = polarhistogram(AllMS, 20);
+AllValues = All.Values;
+All.Values
 
-legend('FontSize', 14);
+k = polarhistogram(MSbeforePrecue,20);
+sum(k.Values)
+kValues = k.Values./sum(k.Values);
+kValues(isnan(kValues)) = 0;
 
+r = polarhistogram(MSinPrecue,20);
+sum(r.Values)
+rValues = r.Values./sum(r.Values);
+rValues(isnan(rValues)) = 0;
+
+
+g = polarhistogram(MSBetweenPrecueAndStimuli,20);
+
+mmm = sum(g.Values);
+mvalues = g.Values;
+
+
+
+b = polarhistogram(MSinStimuli, 20);
+nnn = sum(b.Values);
+nvalues =  b.Values;
+
+aValues  = (mvalues+nvalues)./(mmm + nnn);
+
+subplot(1,3,1);
+p3 = polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts', kValues, 'FaceColor', 'b','FaceAlpha', 0.5);
+rlim([0,max(kValues)]);
+title('MS before initial cue (505ms)', 'FontSize', 16);
+set(gca,'FontSize',20);
+
+hold off;
+
+
+subplot(1,3,2);
+p1 = polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts', rValues, 'FaceColor', 'r','FaceAlpha', 0.5);
+rlim([0,max(rValues)]);
+title('MS in initial cue (300ms)', 'FontSize', 16);
+set(gca,'FontSize',20);
+
+hold off;
+
+subplot(1,3,3);
+
+p2 = polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts', aValues, 'FaceColor', 'y','FaceAlpha', 0.5);
+title('MS in ISI and stimuli (336ms)', 'FontSize', 16);
+rlim([0,max(aValues)]);
+set(gca,'FontSize',20);
+set(h,'Position',[0, 0, 1200, 400]);
+hold off;
+
+%sgtitle('Z068 MS frequency data in probility', 'FontSize', 28);
+
+
+
+
+% subplot(1,3,3);
+% p3 = polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts', bValues, 'FaceColor', 'b','FaceAlpha', 0.5);
+% title('MS in stimuli (36ms)', 'FontSize', 16);
+% rlim([0,max(bValues)]);
 
 % subplot(1,2,1);
 % polarplot(theta,amp, 'x');

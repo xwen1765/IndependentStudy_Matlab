@@ -74,7 +74,9 @@ for k = 1 : length(pptrials)
         end
         
     end
-    
+    if(~ismember(fieldnames(pptrials{1,k}),'ResponseTime'))
+         exclude = [exclude, k];
+    end
 end
 
 exclude = unique(exclude);
@@ -333,23 +335,49 @@ std = [sigVMS sigVNoMS; sigNMS sigNNoMS; sigIMS sigINoMS];
 acc = acc*100;
 std = std *100;
 stdlabel = [sigVMS sigVNoMS; sigNMS sigNNoMS; sigIMS sigINoMS];
+
 hB = barwitherr(std,acc);
 
-labels = [totalMSVinI (totalNoMSV +totalMSVNoinI); totalMSNinI (totalNoMSN + totalMSNNoinI); totalMSIinI (totalNoMSI + totalMSINoinI)];
+%labels = [totalMSVinI (totalNoMSV +totalMSVNoinI); totalMSNinI (totalNoMSN + totalMSNNoinI); totalMSIinI (totalNoMSI + totalMSINoinI)];
+
+labels = [totalMSVinI (totalNoMSV ); totalMSNinI (totalNoMSN); totalMSIinI (totalNoMSI)];
 labels = string(labels);
 hT=[];              % placeholder for text object handles
 
 
-for i=1:length(hB)  % iterate over number of bar objects
-    hT=[hT,text(hB(i).XData+hB(i).XOffset,hB(i).YData + 0.05,labels(:,i), ...
-        'VerticalAlignment','bottom','horizontalalign','center')];
-end
+% for i=1:length(hB)  % iterate over number of bar objects
+%     hT=[hT,text(hB(i).XData+hB(i).XOffset,hB(i).YData + 0.05,labels(:,i), ...
+%         'VerticalAlignment','bottom','horizontalalign','center')];
+% end
 
-%title("Accuracy", "FontSize", 20);
 
-xticks([1 2 3]);
-xticklabels({'','',''});
+
+xticks([1 2 3 4 5 6]);
+xticklabels({'Valid','Neutral','Invalid'});
 ylim([50,100]);
 ytickformat('percentage');
 ylabel('Task Acccuracy','FontSize',20);
-legend("With MS","Without MS", 'FontSize', 15);
+legend("With MS","Without MS", 'FontSize', 26);
+set(h,'Position',[0, 0, 800, 640]);
+set(gca,'FontSize',26);
+
+figure();
+deltaMS = accuracyVMS - accuracyIMS;
+deltaNoMS = accuracyVNoMS - accuracyINoMS;
+deltaAcc = [accuracyVMS - accuracyIMS, accuracyVNoMS - accuracyINoMS];
+
+d = [sqrt(ph_viMS*(1-ph_viMS)*(1/VvMS+1/ViMS)),sqrt(ph_viNoMS*(1-ph_viNoMS)*(1/VvNoMS+1/ViNoMS))];
+
+bar(1, deltaMS, 'facecolor', [222,235,247]/255);
+hold on;
+bar(2, deltaNoMS, 'facecolor', [49,130,189]/255);
+
+deltax = categorical({'With MS','Without MS'});
+deltax = reordercats(deltax,{'With MS','Without MS'});
+
+errorbar(deltax,[deltaMS,deltaNoMS],d,'.','Color','black');
+
+xticks([1 2 ]);
+xticklabels({'With MS','Without MS'});
+title("Valid Accurancy - Invalid Accurancy", "FontSize", 20);
+set(gca,'FontSize',26);

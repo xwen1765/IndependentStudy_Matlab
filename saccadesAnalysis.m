@@ -124,12 +124,14 @@ for i = 1:length(trialsBeforeStmOff)
     end
     
 end
-
+h = figure();
 subplot(3,2,1);
 polarplot(thetaL,ampL, 'x');
 
+
 subplot(3,2,2);
 polarhistogram(thetaL,15);
+
 % xlim([0,2*pi]);
 % xticks([0,pi/4, pi/2, 3*pi/4, pi, pi+pi/4, pi+pi/2, pi+3*pi/4, 2*pi]);
 % xticklabels({'0','45','90','135','180','225','270','315','360'});
@@ -146,6 +148,10 @@ subplot(3,2,5);
 polarplot(thetaN,ampN, 'x');
 subplot(3,2,6);
 polarhistogram(thetaR,15);
+sgtitle('Z068 Saccades Data','FontSize',16);
+set(h,'Position',[0, 0, 600, 800]);
+export_fig BryceSaccadesData.png -m3;
+
 % xlim([0,2*pi]);
 % xticks([0,pi/4, pi/2, 3*pi/4, pi, pi+pi/4, pi+pi/2, pi+3*pi/4, 2*pi]);
 % xticklabels({'0','45','90','135','180','225','270','315','360'});
