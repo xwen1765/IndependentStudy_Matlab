@@ -207,7 +207,7 @@ accuracyROp = rightOpCorrect/rightOpTotal;
 
 accMS = [accuracyL,accuracyLOp;accuracyR, accuracyROp];
 
-bar(accMS)
+bar(accMS);
 
 
 figure();

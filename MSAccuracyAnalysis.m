@@ -366,9 +366,11 @@ figure();
 deltaMS = accuracyVMS - accuracyIMS;
 deltaNoMS = accuracyVNoMS - accuracyINoMS;
 deltaAcc = [accuracyVMS - accuracyIMS, accuracyVNoMS - accuracyINoMS];
-
+deltaAcc = deltaAcc * 100;
+deltaMS = deltaMS * 100;
+deltaNoMS = deltaNoMS * 100;
 d = [sqrt(ph_viMS*(1-ph_viMS)*(1/VvMS+1/ViMS)),sqrt(ph_viNoMS*(1-ph_viNoMS)*(1/VvNoMS+1/ViNoMS))];
-
+d = 100 * d;
 bar(1, deltaMS, 'facecolor', [222,235,247]/255);
 hold on;
 bar(2, deltaNoMS, 'facecolor', [49,130,189]/255);
@@ -376,9 +378,11 @@ bar(2, deltaNoMS, 'facecolor', [49,130,189]/255);
 deltax = categorical({'With MS','Without MS'});
 deltax = reordercats(deltax,{'With MS','Without MS'});
 
+ytickformat('percentage');
+
 errorbar(deltax,[deltaMS,deltaNoMS],d,'.','Color','black');
 
 xticks([1 2 ]);
 xticklabels({'With MS','Without MS'});
-title("Valid Accurancy - Invalid Accurancy", "FontSize", 20);
+%title("Valid Accurancy - Invalid Accurancy", "FontSize", 20);
 set(gca,'FontSize',26);

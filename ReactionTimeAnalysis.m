@@ -217,9 +217,9 @@ tVN = abs(meanrtV-meanrtN)/sqrt(rtV_se^2+rtN_se^2);
 tNI = abs(meanrtN-meanrtI)/sqrt(rtN_se^2+rtI_se^2);
 
 % p-value
-pVI = 1-tcdf(tVI,dofVI);
-pVN = 1-tcdf(tVN,dofVN);
-pNI = 1-tcdf(tNI,dofNI);
+pVI = 1-tcdf(tVI,dofVI)
+pVN = 1-tcdf(tVN,dofVN)
+pNI = 1-tcdf(tNI,dofNI)
 
 h = figure(2);
 %bar(x,acc, 0.4);
@@ -238,6 +238,6 @@ errorbar(1:3,rt,Err,'.', 'Color', 'black');
 xlabel('Conditions','FontSize',28);
 ylabel('Response Time','FontSize',28);
 hold on
-
+ylim([500,900]);
 set(h,'Position',[0, 0, 800, 640]);
-
+rt
