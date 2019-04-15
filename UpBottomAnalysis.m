@@ -127,6 +127,11 @@ model_error = err;
 % Creating axes and the bar graph
 ax = axes;
 h = bar(model_series,'BarWidth',1);
+h(1).FaceColor = [179,216,230]/255;
+h(1).EdgeColor = [179,216,230]/255;
+h(2).FaceColor = [242,176,110]/255;
+h(2).EdgeColor = [242,176,110]/255;
+
 % Set color for each bar face
 % h(1).FaceColor = 'blue';
 % h(2).FaceColor = 'yellow';
