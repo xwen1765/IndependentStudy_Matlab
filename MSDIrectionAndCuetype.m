@@ -208,3 +208,24 @@ set(h,'Position',[0, 0, 600, 800]);
 % xlim([0,2*pi]);
 % xticks([0,pi/4, pi/2, 3*pi/4, pi, pi+pi/4, pi+pi/2, pi+3*pi/4, 2*pi]);
 % xticklabels({'0','45','90','135','180','225','270','315','360'});
+
+m = figure();
+
+subplot(1,3,1);
+polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts',k1Values,'FaceColor', 'b','FaceAlpha', 0.5);
+title("Initial Cue to the left",'FontSize', 20);
+set(gca,'FontSize',16);
+subplot(1,3,2);
+polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts',k2Values,'FaceColor', 'b','FaceAlpha', 0.5);
+title("Neutral Cue",'FontSize', 20);
+set(gca,'FontSize',16);
+
+subplot(1,3,3);
+polarhistogram('BinEdges',0:pi/10:2*pi,'BinCounts',k3Values,'FaceColor', 'b','FaceAlpha', 0.5);
+title("Intial Cue to the right",'FontSize', 20);
+set(gca,'FontSize',16);
+
+set(m,'Position',[0, 0, 1200, 400]);
+
+
+
