@@ -18,7 +18,7 @@ rightCorrect = 0;
 leftCorrect = 0;
 for k = 1:length(alltrials)
     
-    if(alltrials{1,k}.AnswerDirection ~= -1 &&alltrials{1,k}.TrialType == 1)
+    if(alltrials{1,k}.AnswerDirection ~= -1 && alltrials{1,k}.TrialType == 1)
         if(alltrials{1,k}.CueDirection == -1)
             leftTotal = leftTotal+1;
             lvt = lvt+1;
